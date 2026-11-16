@@ -1,4 +1,4 @@
-.PHONY: help init check-init check-dev-deps install reinstall clean lint format build test package dev
+.PHONY: help init check-init check-dev-deps install reinstall clean lint format build test package dev pr-docs
 
 PLUGIN_NAME := {{.Name}}
 
@@ -12,6 +12,7 @@ NCC := pnpm exec ncc
 BABEL := pnpm exec babel
 NODEMON := pnpm exec nodemon
 POWERSHELL := powershell -NoProfile -ExecutionPolicy Bypass -Command
+PR_ARGS ?=
 
 help:
 	@echo "Available commands:"
@@ -24,6 +25,7 @@ help:
 	@echo "  make lint     - Run linter"
 	@echo "  make format   - Format code"
 	@echo "  make package  - Build and package plugin"
+	@echo "  make pr-docs  - Generate store entry and PR description in docs/"
 
 init:
 	$(PYTHON) scripts/init-wox-project.py
@@ -88,3 +90,6 @@ else
 	cd $(DIST_DIR) && zip -r ../wox.plugin.$(PLUGIN_NAME).wox .
 	rm -rf $(DIST_DIR)
 endif
+
+pr-docs: check-init
+	$(PYTHON) scripts/generate-store-pr.py $(PR_ARGS)
